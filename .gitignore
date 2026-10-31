@@ -1,6 +1,5 @@
+node_modules/
 dist/
-*.zip
-*.pdb
-.vs/
-bin/
-obj/
+native/*.exe
+preview.png
+smoke.json

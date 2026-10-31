@@ -1,43 +1,25 @@
-name: Build Windows app
+name: Build Electron Windows app
 on:
   push:
   pull_request:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        shell: powershell
-        run: ./build.ps1
-      - name: Test locks and render UI
-        shell: powershell
-        run: powershell -NoProfile -ExecutionPolicy Bypass -STA -File ./tests.ps1
-      - name: Package
-        shell: powershell
-        run: Compress-Archive -Path dist/* -DestinationPath RobloxDuo-windows.zip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:native
+      - run: npm test
+      - run: npm run package
       - uses: actions/upload-artifact@v4
         with:
-          name: RobloxDuo-windows
-          path: RobloxDuo-windows.zip
-  release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: RobloxDuo-windows
-      - name: Publish release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: gh release create "$RELEASE_TAG" RobloxDuo-windows.zip --title "Roblox Duo $RELEASE_TAG" --notes "Experimental Windows release. Simultaneous gameplay is not yet verified. See the README for setup and compatibility."
+          name: RobloxDuo-electron-windows
+          path: dist/RobloxDuo-win32-x64/
+          retention-days: 14

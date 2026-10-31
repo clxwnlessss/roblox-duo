@@ -1,86 +1,38 @@
-# Roblox Duo
+# Roblox Duo 0.4.0 — Electron edition
 
-**[Download for Windows](https://github.com/clxwnlessss/roblox-duo/releases/latest)** · [Report a bug](https://github.com/clxwnlessss/roblox-duo/issues) · [Browse source](src)
+An experimental Windows companion for two Roblox accounts. Developed by **overdosedclxwn**. Ideas or feedback? DM **overdosedclxwn** on Discord.
 
-## What is Roblox Duo?
+**[Download for Windows](https://github.com/clxwnlessss/roblox-duo/releases/tag/v0.4.0)** · [Report an issue](https://github.com/clxwnlessss/roblox-duo/issues)
 
-Roblox Duo is a free, MIT-licensed Windows desktop utility designed to help open two Roblox accounts using separate browser profiles. It includes a system tray mode, custom profile names, Edge/Chrome/Firefox support, troubleshooting diagnostics, and manual update checks.
+![Electron interface](docs/interface.png)
 
-**Status: experimental.** Two-account gameplay has not yet been verified. Compatibility can change with Roblox updates. Source review and reproducible compatibility reports are welcome.
+## Run
 
-## Help improve Duo
+Extract the entire Windows ZIP, then run `RobloxDuo.exe` inside the application folder. Keep the files together. Windows 10/11 x64 and .NET Framework 4.x are required. This is an unsigned preview.
 
-Found a problem? Open an issue with your Windows version, browser, Duo version, exact steps, and expected versus actual behavior. Redact personal details from diagnostic reports. Never share account cookies, passwords, or browser profile folders.
+Close Roblox, enable Duo mode, open Main and Alt, sign in with different accounts on roblox.com, and press Play in each browser. Two-account gameplay remains unverified; Roblox updates can invalidate the mutex method. An enabled status only confirms that Windows locks are held.
 
-Feature ideas and code contributions are welcome. For suggestions on Discord, DM **overdosedclxwn**.
+## Features
 
-A small, experimental Windows companion for opening two Roblox accounts side by side. English interface, separate browser profiles, and no installer.
+- Custom Electron interface with separate overview, settings, and diagnostics pages.
+- Persistent names and browser choice (Edge, Chrome, Firefox).
+- Minimize to tray; double-click its icon to restore. Close/ Quit asks before releasing active locks.
+- Manual GitHub update checks; downloads open in the browser after confirmation.
+- Separate browser profiles. Existing Edge profile directories from 0.3.0 are preserved. Legacy settings are imported on first use; new settings are in `%LOCALAPPDATA%/RobloxDuo/electron-settings.json`.
+- C# helper holds both Roblox mutexes on its main thread. Pipe closure releases locks if the parent app stops. No injection, client patching, password/cookie reading, telemetry, or automatic installs.
 
-![Roblox Duo interface](docs/interface.png)
+## Build
 
-## Getting started
-
-Requires Windows 10/11, .NET Framework 4.5 or newer, Edge/Chrome/Firefox, and the desktop Roblox Player installed from roblox.com. Browsers must be installed in standard locations.
-
-1. Close every Roblox window and any other multi-instance utility.
-2. Run `RobloxDuo.exe` and select **Enable Duo mode**.
-3. Select **Open Main**, sign in on the official Roblox website, and press **Play** in your chosen experience. Allow the browser to open Roblox.
-4. Select **Open Alt**, sign in to a **different account**, and launch an experience.
-5. Keep Duo running while playing. Minimizing hides it in the Windows system tray. Double-click its icon or choose **Open Roblox Duo** from the tray menu to restore it. Use **Exit** or the window close button to quit.
-
-Buttons open browser profiles; they do not automatically authenticate or join a game. The counter reports RobloxPlayerBeta processes, not successful game sessions.
-
-## Settings and diagnostics
-
-- **Settings:** rename Main and Alt (up to 24 characters), select a browser, and configure a public GitHub repository. Settings persist in `%LOCALAPPDATA%\RobloxDuo\settings.xml`. Renaming a profile does not change its directory or sign-in.
-- **Browser profiles:** Edge retains existing v0.2.0 sessions. Chrome and Firefox use separate directories per browser and account; switching browsers requires signing in there. Firefox uses a dedicated profile with `-no-remote`; reuse an already-open Firefox profile window.
-- **Diagnostics:** view the mode, process count, selected browser availability, Roblox launch protocol, latest error, and suggested fixes. The report can be selected and copied and does not contain passwords or cookies.
-- **Check for updates:** enter `clxwnlessss/roblox-duo` in Settings. Duo checks the [latest stable GitHub release](https://docs.github.com/en/rest/releases/releases#get-the-latest-release) only when clicked. Newer versions offer to open GitHub for manual download; nothing is downloaded, installed, or executed automatically. Release tags should follow `vMAJOR.MINOR.PATCH`. Missing releases, rate limits, and connection errors are reported. For v0.3.0, configure `clxwnlessss/roblox-duo` manually in Settings.
-
-Firefox launch arguments follow [Mozilla's command-line documentation](https://firefox-source-docs.mozilla.org/browser/CommandLineParameters.html).
-
-## Compatibility
-
-**Experimental:** simultaneous gameplay has not been validated with two signed-in accounts. Roblox updates may prevent this method from working. A successful build or an enabled status does not establish client compatibility. The Microsoft Store client is not tested.
-
-Duo creates and holds the named Windows mutexes `ROBLOX_singletonMutex` and `ROBLOX_singletonEvent` before Roblox starts. This approach is also described in [this community implementation](https://github.com/randheimer/roblox-multi-instance). Duo does not patch the client, inject code, or close handles in other processes.
-
-If the first game closes when the second launches, the current client may be incompatible. If enabling fails, close other Roblox sessions and multi-instance utilities before retrying. If the selected browser is missing, choose an installed browser in Settings or use separate profiles manually after enabling Duo mode.
-
-## Privacy
-
-The application does not read passwords or cookies, and contains no telemetry. Sign-in happens on roblox.com in your chosen browser. Edge stores the two persistent profiles under `%LOCALAPPDATA%\RobloxDuo\Account1` and `Account2`. Chrome and Firefox use `Chrome\Account1`, `Chrome\Account2`, `Firefox\Account1`, and `Firefox\Account2` beneath that same root. Sign out in those browser windows to remove active account sessions. Do not commit or share these profile directories. A manual update check sends a normal HTTPS request to GitHub's public API without an access token.
-
-## Build from source
-
-On Windows, in PowerShell:
+Install Node.js and use PowerShell from this directory:
 
 ```powershell
-.\build.ps1
+npm ci
+npm run build:native
+npm test
+npm start
+npm run package
 ```
 
-Output: `dist/RobloxDuo.exe`. The build uses the C# compiler included with the Windows .NET Framework; no NuGet packages are required.
+Packaging produces `dist/RobloxDuo-win32-x64`. The Electron build is larger and uses more memory than the old native edition. Renderer runs with context isolation and sandboxing; only narrow validated IPC actions reach the main process. Browser launches use argument arrays without a shell.
 
-If local PowerShell policy blocks scripts, review the scripts first, then run `powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1`. This applies only to that process and does not change the system execution policy. The same process option can be used with the test command below.
-
-Run the isolated lock and UI checks:
-
-```powershell
-powershell -NoProfile -STA -File .\tests.ps1
-```
-
-Tests cover mutex collision/cleanup, settings persistence and validation, version parsing, browser arguments and profile separation, tray hide/restore, diagnostics, and UI rendering. They do not launch browsers or Roblox or sign in to an account. Live update checks against this project's repository and two-account gameplay remain unverified.
-
-## Publishing
-
-The GitHub Actions workflow builds and tests on pushes and pull requests. A version tag such as `v0.3.0` also creates a GitHub Release containing the portable ZIP. Releases are unsigned. Tag only the commit you intend to publish.
-
-## Developer and feedback
-
-Developed by **overdosedclxwn**.
-
-Ideas or feedback? DM **overdosedclxwn** on Discord.
-
-## License
-
-MIT. Independent community project; not affiliated with or endorsed by Roblox Corporation. Roblox is a trademark of its respective owner.
+The previous native implementation is retained in `src/`, `build.ps1`, and `tests.ps1` for reference; the Electron edition uses the npm commands above. MIT licensed. Not affiliated with Roblox Corporation.
