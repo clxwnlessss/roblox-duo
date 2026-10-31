@@ -1,5 +1,19 @@
 # Roblox Duo
 
+**[Download for Windows](https://github.com/clxwnlessss/roblox-duo/releases/latest)** · [Report a bug](https://github.com/clxwnlessss/roblox-duo/issues) · [Browse source](src)
+
+## What is Roblox Duo?
+
+Roblox Duo is a free, MIT-licensed Windows desktop utility designed to help open two Roblox accounts using separate browser profiles. It includes a system tray mode, custom profile names, Edge/Chrome/Firefox support, troubleshooting diagnostics, and manual update checks.
+
+**Status: experimental.** Two-account gameplay has not yet been verified. Compatibility can change with Roblox updates. Source review and reproducible compatibility reports are welcome.
+
+## Help improve Duo
+
+Found a problem? Open an issue with your Windows version, browser, Duo version, exact steps, and expected versus actual behavior. Redact personal details from diagnostic reports. Never share account cookies, passwords, or browser profile folders.
+
+Feature ideas and code contributions are welcome. For suggestions on Discord, DM **overdosedclxwn**.
+
 A small, experimental Windows companion for opening two Roblox accounts side by side. English interface, separate browser profiles, and no installer.
 
 ![Roblox Duo interface](docs/interface.png)
@@ -21,7 +35,7 @@ Buttons open browser profiles; they do not automatically authenticate or join a 
 - **Settings:** rename Main and Alt (up to 24 characters), select a browser, and configure a public GitHub repository. Settings persist in `%LOCALAPPDATA%\RobloxDuo\settings.xml`. Renaming a profile does not change its directory or sign-in.
 - **Browser profiles:** Edge retains existing v0.2.0 sessions. Chrome and Firefox use separate directories per browser and account; switching browsers requires signing in there. Firefox uses a dedicated profile with `-no-remote`; reuse an already-open Firefox profile window.
 - **Diagnostics:** view the mode, process count, selected browser availability, Roblox launch protocol, latest error, and suggested fixes. The report can be selected and copied and does not contain passwords or cookies.
-- **Check for updates:** after publication, enter the project's `owner/repository` in Settings. Duo checks the [latest stable GitHub release](https://docs.github.com/en/rest/releases/releases#get-the-latest-release) only when clicked. Newer versions offer to open GitHub for manual download; nothing is downloaded, installed, or executed automatically. Release tags should follow `vMAJOR.MINOR.PATCH`. Missing releases, rate limits, and connection errors are reported. No repository is configured by default because the project has not yet been published.
+- **Check for updates:** enter `clxwnlessss/roblox-duo` in Settings. Duo checks the [latest stable GitHub release](https://docs.github.com/en/rest/releases/releases#get-the-latest-release) only when clicked. Newer versions offer to open GitHub for manual download; nothing is downloaded, installed, or executed automatically. Release tags should follow `vMAJOR.MINOR.PATCH`. Missing releases, rate limits, and connection errors are reported. For v0.3.0, configure `clxwnlessss/roblox-duo` manually in Settings.
 
 Firefox launch arguments follow [Mozilla's command-line documentation](https://firefox-source-docs.mozilla.org/browser/CommandLineParameters.html).
 
@@ -55,7 +69,7 @@ Run the isolated lock and UI checks:
 powershell -NoProfile -STA -File .\tests.ps1
 ```
 
-Tests cover mutex collision/cleanup, settings persistence and validation, version parsing, browser arguments and profile separation, tray hide/restore, diagnostics, and UI rendering. They do not launch browsers or Roblox or sign in to an account. Live update checks against this project's future repository and two-account gameplay remain unverified.
+Tests cover mutex collision/cleanup, settings persistence and validation, version parsing, browser arguments and profile separation, tray hide/restore, diagnostics, and UI rendering. They do not launch browsers or Roblox or sign in to an account. Live update checks against this project's repository and two-account gameplay remain unverified.
 
 ## Publishing
 
